@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>مكتبة البيتيك | منصة مرنة وشاملة للمعرفة</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f9f6ef;
+            color: #2a2418;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.2s ease;
+        }
+        /* Dark mode styles */
+        body.dark-mode {
+            background: #1e1a16;
+            color: #ece2d4;
+        }
+        body.dark-mode .animated-bg {
+            background: linear-gradient(145deg, #2b241f 0%, #1f1a15 100%);
+        }
+        body.dark-mode .shelf-category {
+            background: #2c2620cc;
+            backdrop-filter: blur(2px);
+            color: #f0e2d2;
+        }
+        body.dark-mode .book-card {
+            background: #2f2922;
+            color: #f2e6d8;
+        }
+        body.dark-mode .book-desc {
+            color: #cbbfae;
+        }
+        body.dark-mode .filter-btn {
+            background: #3f352c;
+            color: #f2e0ce;
+        }
+        body.dark-mode .filter-btn.active, body.dark-mode .filter-btn:hover {
+            background: #b88542;
+            color: white;
+        }
+        body.dark-mode .team-card {
+            background: #322b24;
+            color: #f2e2d0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        body.dark-mode .pdf-link {
+            background: #d69b52;
+            color: #261f17;
+        }
+        body.dark-mode .navbar.scrolled {
+            background: #1f1914ee;
+        }
+        body.dark-mode .section-title {
+            border-right-color: #e2a164;
+        }
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #f2e6d8 0%, #e6d5c0 100%);
+            z-index: -2;
+            transition: background 0.3s;
+        }
+        .floating-books {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .floating-item {
+            position: absolute;
+            font-size: 2rem;
+            color: #c7a87b;
+            opacity: 0.12;
+            animation: floatSlow 22s infinite ease-in-out;
+        }
+        @keyframes floatSlow {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.15; }
+            80% { opacity: 0.15; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: 0.3s;
+            background: transparent;
+        }
+        .navbar.scrolled {
+            background: #dba46cee;
+            backdrop-filter: blur(12px);
+            padding: 0.7rem 6%;
+            box-shadow: 0 4px 20px rgba(201, 192, 192, 0.1);
+        }
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 150px;
+            object-fit: contain;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .scrolled .nav-links a { color: #f6e5d4; }
+        .search-bar {
+            background: rgba(255,255,240,0.9);
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: 'Cairo', sans-serif;
+            padding: 5px 10px;
+            width: 220px;
+        }
+        /* theme toggle button */
+        .theme-toggle {
+            background: rgba(0,0,0,0.15);
+            border: none;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            color: #3e2a1f;
+        }
+        .scrolled .theme-toggle {
+            background: rgba(255,255,210,0.2);
+            color: #ffefdb;
+        }
+        .hero {
+            height: 100vh;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 800;
+        }
+        .hero-content p {
+            font-size: 1.3rem;
+            margin: 1rem 0;
+        }
+        .btn-cta {
+            background: #d6a15a;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-cta:hover {
+            background: #b88542;
+        }
+        .section {
+            padding: 5rem 6%;
+        }
+        .section-title {
+            font-size: 2.2rem;
+            border-right: 6px solid #d6a15a;
+            padding-right: 1rem;
+            margin-bottom: 2rem;
+        }
+        /* قسم الرؤية والرسالة والفريق بشكل مميز أسفل الهيرو */
+        .vision-team-wrapper {
+            background: linear-gradient(135deg, #fdf8f0 0%, #f6ede2 100%);
+            border-radius: 48px 48px 48px 12px;
+            margin: 2rem 6% 3rem 6%;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+        }
+        body.dark-mode .vision-team-wrapper {
+            background: #251f1a;
+        }
+        .vision-card {
+            padding: 2rem 2rem 1rem 2rem;
+            border-bottom: 1px solid rgba(100,70,40,0.15);
+        }
+        .team-section-inner {
+            padding: 0.5rem 2rem 2rem 2rem;
+        }
+        /* تحسين طريقة عرض الفريق - تصميم بطاقات حديثة وجذابة */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1.5rem;
+        }
+        .team-card {
+            background: white;
+            border-radius: 32px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #d6a15a20 0%, transparent 70%);
+            border-radius: 0 0 0 40px;
+            pointer-events: none;
+        }
+        .team-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 28px -8px rgba(0,0,0,0.15);
+        }
+        .team-card i {
+            background: linear-gradient(145deg, #d6a15a, #b88542);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-size: 2.6rem;
+            margin-bottom: 0.8rem;
+        }
+        .team-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0.5rem 0 0.25rem;
+            color: inherit;
+        }
+        .team-role {
+            font-size: 0.8rem;
+            color: #b17e4b;
+            font-weight: 600;
+            background: rgba(209, 146, 73, 0.12);
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-top: 0.5rem;
+        }
+        body.dark-mode .team-role {
+            background: rgba(209, 146, 73, 0.25);
+            color: #e2b57a;
+        }
+        .filter-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            justify-content: center;
+        }
+        .filter-btn {
+            background: #e9ddcf;
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: #b17e4b;
+            color: white;
+        }
+        .shelves-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        /* تحسين عرض الرفوف - جعلها أكثر أناقة */
+        .shelf-category {
+            background: #fffcf5cc;
+            backdrop-filter: blur(2px);
+            border-radius: 28px;
+            padding: 1.2rem 1.2rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+        }
+        .shelf-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            padding-right: 0.5rem;
+            color: #5f4a32;
+            border-right: 4px solid #d6a15a;
+        }
+        .shelf-header i {
+            font-size: 1.4rem;
+            color: #b88542;
+        }
+        /* جعل الكتب أصغر حجماً وأكثر راحة للتصفح */
+        .books-horizontal {
+            display: flex;
+            overflow-x: auto;
+            gap: 1.2rem;
+            padding: 0.8rem 0.3rem;
+            scroll-behavior: smooth;
+            cursor: grab;
+            scrollbar-width: thin;
+        }
+        .books-horizontal::-webkit-scrollbar {
+            height: 5px;
+        }
+        .books-horizontal::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+        .books-horizontal::-webkit-scrollbar-thumb {
+            background: #d6a15a;
+            border-radius: 10px;
+        }
+        .book-card {
+            min-width: 210px;
+            width: 220px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 22px -8px rgba(0,0,0,0.12);
+        }
+        .book-cover {
+            height: 190px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-color: #e9dfd2;
+        }
+        .book-cover i {
+            font-size: 2.8rem;
+            color: white;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.25);
+            padding: 12px;
+            border-radius: 60px;
+        }
+        .book-cover.has-image i {
+            display: none;
+        }
+        .book-info {
+            padding: 0.7rem 0.9rem 0.9rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .book-title {
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .book-desc {
+            font-size: 0.7rem;
+            color: #7a6246;
+            margin: 0.4rem 0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .more-details-btn {
+            background: none;
+            border: none;
+            color: #d6a15a;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin: 4px 0 6px;
+            text-align: right;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            transition: 0.2s;
+        }
+        .more-details-btn:hover {
+            color: #b46f2a;
+            gap: 8px;
+        }
+        .pdf-link {
+            background: #3b2c1e;
+            color: #ffefdb;
+            border: none;
+            width: 100%;
+            padding: 0.45rem;
+            border-radius: 40px;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            transition: 0.2s;
+        }
+        .pdf-link:hover {
+            background: #5f452e;
+            gap: 8px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.25s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            background: #fffaf2;
+            max-width: 700px;
+            width: 85%;
+            border-radius: 32px;
+            padding: 1.5rem;
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            direction: rtl;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .modal-content {
+            background: #2a241e;
+            color: #eee0cf;
+        }
+        .modal-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #d6a15a;
+            display: inline-block;
+        }
+        .index-section {
+            margin-top: 1rem;
+        }
+        .index-item {
+            background: #f2ebe2;
+            margin: 0.8rem 0;
+            border-radius: 24px;
+            padding: 0.8rem 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+        body.dark-mode .index-item {
+            background: #3d352c;
+        }
+        .index-img {
+            width: 70px;
+            height: 70px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 16px;
+            flex-shrink: 0;
+        }
+        .index-text {
+            flex: 1;
+        }
+        .index-text strong {
+            display: block;
+            font-size: 1rem;
+            color: #b17e4b;
+        }
+        .close-modal {
+            background: #d6a15a;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            margin-top: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+        }
+        footer {
+            background: #2c241c;
+            color: #dac29c;
+            text-align: center;
+            padding: 2rem;
+        }
+        @media (max-width: 800px) {
+            .navbar { flex-wrap: wrap; gap: 10px; justify-content: center; }
+            .hero-content h1 { font-size: 2.2rem; }
+            .section { padding: 3rem 5%; }
+            .book-card { min-width: 180px; width: 190px; }
+            .book-cover { height: 150px; }
+            .team-grid { gap: 1rem; }
+            .index-img { width: 50px; height: 50px; }
+            .vision-team-wrapper { margin: 1rem 4% 2rem 4%; }
+            .shelf-header { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="animated-bg"></div>
+<div id="floating" class="floating-books"></div>
+
+<nav class="navbar" id="navbar">
+    <img src="logo.png" alt="شعار مكتبة المعرفة" class="logo-img">
+    <ul class="nav-links">
+        <li><a href="#">الرئيسية</a></li>
+        <li><a href="#library">المكتبة</a></li>
+        <li><a href="#team-anchor">الفريق</a></li>
+        <li><a href="#vision-anchor">الرؤية</a></li>
+    </ul>
+    <div style="display: flex; gap: 12px;">
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="ابحث عن كتاب...">
+        </div>
+        <button class="theme-toggle" id="themeToggleBtn"><i class="fas fa-moon"></i></button>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero" style="background-image: url('Gemini_Generated_Image_cmnw4rcmnw4rcmnw.png');">
+    <div class="hero-content">
+        <h1>أهلا بكم في مكتبة منارة المعارف الرقمية</h1>
+        <p>بوابتكم نحو المراجع الموثوقة لمشاريعكم</p>
+        <p> يفضل تصفح المكتبة على جهاز حاسوب لتجربة افضل </p>
+        <a href="#library" class="btn-cta"><i class="fas fa-arrow-down"></i> تصفح الكتب</a>
+    </div>
+</section>
+
+<!-- قسم الفريق + الرؤية والرسالة (تم نقلهما أسفل الهيرو وقبل خزائن المعرفة) -->
+<div class="vision-team-wrapper" id="vision-anchor">
+    <!-- الرؤية والرسالة -->
+    <div class="vision-card">
+        <h2 class="section-title" style="margin-bottom: 1rem;">رؤيتنا ورسالتنا</h2>
+        <div style="background: rgba(255,250,240,0.5); border-radius: 28px; padding: 1.5rem;">
+            <p><strong>الرؤية:</strong> "أن نكون المنصة الرقمية المرجعية الأولى لكافة طلبة مسار BTEC، نمهد طريق المعرفة للجميع ونعزز بيئة تعليمية تفاعلية تلهم الطلاب والطالبات نحو التميز والإبداع التقني في أرجاء الوطن."</p>
+            <p style="margin-top: 1rem;"><strong>الرسالة:</strong> "نحن في فريق عمل BTEC-LIB نلتزم بتوفير بيئة تعليمية رقمية متكاملة تكسر حواجز الوصول للمعلومة. نسعى لجمع وتدقيق المراجع العلمية والتقنية لتكون متاحة بضغطة زر لكل طالب وطالبة يسعون لتطوير مهاراتهم، مؤمنين بأن توحيد الجهود التعليمية هو مفتاح النجاح المهني للجيل القادم."</p>
+            <p style="margin-top: 1rem;"><strong>قيمنا:</strong> الجودة، الثقة، التعاون، الابتكار.</p>
+        </div>
+    </div>
+    <!-- فريق مكتبة البيتيك - عرض محسن -->
+    <div class="team-section-inner" id="team-anchor">
+        <h2 class="section-title" style="margin-bottom: 1rem;">فريق مكتبة البيتيك</h2>
+        <p style="margin-bottom: 1rem;">نهدف إلى توفير أكبر مكتبة مرجعية معتمدة، تعزز مسيرة التعلم وتدعم الطلبة في مسيرتهم المهنية والعملية.</p>
+        <div class="team-grid">
+            <div class="team-card"><i class="fas fa-crown"></i><h3>وفاء بعارة</h3><div class="team-role">القائد - مديرة المدرسة والمشروع</div></div>
+            <div class="team-card"><i class="fas fa-users"></i><h3>ديالا حسن شويات</h3><div class="team-role">منسق الفريق</div></div>
+            <div class="team-card"><i class="fas fa-laptop-code"></i><h3>اسراء محمد خطاطبة</h3><div class="team-role">مهندسة تكنولوجيا معلومات</div></div>
+            <div class="team-card"><i class="fas fa-file-alt"></i><h3>امل مصطفى بني سلمان</h3><div class="team-role">سكرتيرة</div></div>
+            <div class="team-card"><i class="fas fa-user-friends"></i><h3>منار حسن شويات</h3><div class="team-role">عضو فريق</div></div>
+            <div class="team-card"><i class="fas fa-user-friends"></i><h3>ميساء على عنانزة</h3><div class="team-role">عضو فريق</div></div>
+            <div class="team-card"><i class="fas fa-user-friends"></i><h3>نداء مروان خطاطبة</h3><div class="team-role">عضو فريق</div></div>
+            <div class="team-card"><i class="fas fa-code"></i><h3>أحلام حسن عنانزة</h3><div class="team-role">مطور الموقع</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- المكتبة (خزائن المعرفة) -->
+<section id="library" class="section">
+    <h2 class="section-title">خزائن المعرفة</h2>
+    <div id="filterTabs" class="filter-tabs"></div>
+    <div id="shelvesArea" class="shelves-container"></div>
+</section>
+
+<footer>
+    <p>© 2025 مكتبة البيتيك - مشروع مدرسة كفرنجة الثانوية الشاملة للبنات | جميع الكتب والمراجع معتمدة</p>
+</footer>
+
+<!-- Modal Structure for Index -->
+<div id="bookModal" class="modal-overlay">
+    <div class="modal-content">
+        <div id="modalDynamicContent"></div>
+        <button class="close-modal" id="closeModalBtn">إغلاق <i class="fas fa-times"></i></button>
+    </div>
+</div>
+
+<script>
+    // ------------- بيانات مرنة قابلة للتوسعة (نفس البيانات الأصلية) ------------
+    const libraryData = {
+        categories: [
+            { id: "all", name: "الكل", color: "#b17e4b" },
+            { id: "IT", name: "تكنولوجيا المعلومات", color: "#2c6e9e" },
+            { id: "business", name: "إدارة الأعمال", color: "#2d6a4f" },
+            { id: "beauty", name: "التجميل", color: "#d4756b" },
+            { id: "policies", name: "السياسات والقوانين", color: "#4a4e69" },
+        ],
+        shelves: [
+            // رفوف تكنلوجيا المعلومات (جميع البيانات الأصلية محفوظة)
+            { categoryId: "IT", name: "استخدام تكنلوجيا المعلومات  ", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "IT", name: "النمذجة", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "IT", name: "الشبكات", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "IT", name: "البرمجة", icon: "fa-code", books: [
+                { title: "تطوير تطبيقات أندرويد (الجزء الأول)", desc: "دليل تعليمي برمجي مصور.", pdf: "https://drive.google.com/file/d/18fR7trcyxhzOi9LRnAaYtii5JoO9BMuz/view?usp=sharing", coverImage: "android.png", icon: "fa-android",
+                  index: [{page:"صفحة 22-40", description:"إنشاء أول تطبيق واجهات", img:"https://placehold.co/300x200/348f6e/fff?text=UI+Basics"},{page:"صفحة 88-105", description:"قواعد البيانات المحلية", img:"https://placehold.co/300x200/ce8d56/fff?text=SQLite"}] },
+                { title: "بايثون للمبتدئين", desc: "أساسيات البرمجة السريعة", pdf: "https://drive.google.com/file/d/1Qy-rS9e0g80K3SukuDse7ghqgfqk2hNB/view?usp=sharing", coverImage: "python-cover-image.png", icon: "fa-python",
+                  index: [{page:"صفحة 15-35", description:"المتغيرات والحلقات", img:"https://placehold.co/300x200/226644/d6a15a?text=Python+Loops"}] },
+                { title: "Android Programming Tutorials", desc: "اهم المواضيع في برمجة اندرويد", pdf: "https://drive.google.com/file/d/1XSYEUbUNkMNJwDsJXqaDCcXYcxX2kLkd/view?usp=sharing", coverImage: "android cover.png", icon: "fa-python", index: [] },
+                { title: "بايثون للجميع", desc: "المستوى الأول من برمجة البايثون", pdf: "https://drive.google.com/file/d/1lxAkqMkjL4OHvWuZ-PZpRleBTm_1aQHo/view?usp=sharing", coverImage: "python for evry one .png", icon: "fa-python", index: [] },
+                { title: "Beginning Programming For Dummies", desc: "دليل مبسط يكسر حاجز الرهبة", pdf: "https://drive.google.com/file/d/1d_mov92mEPBH3NXUYnqpfvCSGOo17ARW/view?usp=sharing", coverImage: "bigenin programming for dummies cover image .png", icon: "fa-laptop-code", index: [] },
+            ]},
+            { categoryId: "IT", name: " التصميم ", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "IT", name: " تطوير مواقع الويب ", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "IT", name: " تطوير الألعاب ", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "IT", name: " تطوير التطبيقات  ", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},  
+            { categoryId: "IT", name: "نظم تكنلوجيا المعلومات", icon: "fa-microchip", books: [
+                { title: "Technology Processes Automation", desc: "أتمتة العمليات التكنلوجية.", pdf: "https://drive.google.com/file/d/1M77W1b_OotB0S13MKUenHts_ooVKGdrR/view?usp=sharing", coverImage: "Technology Processes Automation.png", icon: "fa-android", index: [] }
+            ]},
+            { categoryId: "IT", name: "الأمن السيبراني", icon: "fa-shield-alt", books: [
+                { title: "صفوة لينكس لباحثي الأمن السايبراني", desc: "نظام لينكس للأمن الرقمي.", pdf: "https://drive.google.com/file/d/1_SBl8b5s9c2wybaKKfgFUijp5nBj-Q2L/view?usp=sharing", coverImage: "kali_cyber.png", icon: "fa-terminal",
+                  index: [{page:"صفحة 12-30", description:"أدوات الاختراق الأخلاقي الأساسية", img:"https://placehold.co/300x200/3b2f24/d6a15a?text=Kali+Tools"},{page:"صفحة 45-62", description:"إعداد بيئة اختبار الاختراق", img:"https://placehold.co/300x200/5c4532/e2bc89?text=PenTest+Lab"}] },
+                { title: "مقدمة في الأمن السيبراني 0.2", desc: "أساسيات حماية البيانات والشبكات.", pdf: "https://drive.google.com/file/d/1grl1xVMOR8Uzo4hQIgM--e8-2Bpd0PK5/view?usp=sharing", coverImage: "NTROtOCyber.png", icon: "fa-lock",
+                  index: [{page:"صفحة 8-20", description:"أنواع الهجمات الإلكترونية", img:"https://placehold.co/300x200/2a4a6e/d6a15a?text=Cyber+Attacks"},{page:"صفحة 70-85", description:"سياسات الأمن السيبراني", img:"https://placehold.co/300x200/467a5e/d6a15a?text=Policies"}] }
+            ]},
+            { categoryId: "IT", name: "إدارة المشاريع", icon: "fa-tasks", books: [
+                { title: "إدارة المشاريع العملية", desc: "نصائح وأدوات لإدارة ناجحة.", pdf: "https://drive.google.com/file/d/15K7weOLM0o1sHr60-_4tRpj6AAm1z2Az/view?usp=sharing", coverImage: "projectManagmentPractic.png", icon: "fa-project-diagram",
+                  index: [{page:"صفحة 33-50", description:"مخطط جانت وإدارة المخاطر", img:"https://placehold.co/300x200/bf8f60/fff?text=Gantt"}] },
+                { title: "Project Management Basics", desc: "كيفية انجاز المشاريع ضمن قوائم التحقق", pdf: "https://drive.google.com/file/d/1jDcRxTMVXmRSEy1TZJuysdOBwODRc3sE/view?usp=sharing", coverImage: "projectmanagmentBaisics.png", icon: "fa-project-diagram", index: [] },
+                { title: "Project Management ToolBox", desc: "تقنيات وأدوات لإدارة المشاريع", pdf: "https://drive.google.com/file/d/1U-JnNHa7WH2xO_7uh0OjUjrH8HdK8WJq/view?usp=sharing", coverImage: "project toolbox.png", icon: "fa-project-diagram", index: [] }
+            ]},
+            { categoryId: "IT", name: " الدعم الفني ", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},  
+            { categoryId: "IT", name: "الذكاء الاصطناعي", icon: "fa-shield-alt", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},  
+            
+            // رفوف الأعمال (جميع البيانات محفوظة كما هي)
+            { categoryId: "business", name: "كتب الاقتصاد والسوق", icon: "fa-chart-line", books: [
+            
+                { title: "عملاء مدى الحياة", desc: "كيف تحول المشتري من أول مره الى زبون دائم", pdf: "https://drive.google.com/file/d/1qKbIq9B-O2zkqjVKOwdzE-n7xaS5zokl/view?usp=sharing", coverImage: "costom for ever.png", icon: "fa-coins",
+                  index: [{page:"15 ", description:" اهمية خدمة العملاء في الشركة .", img:"buesness7.png"},{page:"65", description:"المحافظة على العملاء.", img:"buesness8.png"},{page:"  151", description:"حوافز العملاء.", img:"buesness9.png"}] },
+                  { title: "ثورة في ثقافة الأعمال ", desc: "دليل الشركات في القرن 21", pdf: "https://drive.google.com/file/d/1dJ-_f9bafV2tOquzz-5Pd3R4qTPh7_Yi/view?usp=sharing", coverImage: "buesness16.png", icon: "fa-coins",
+                  index: [{page:"  ", description:"", img:""},{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+
+                  { title: "151 فكرة سريعة لزيادة المبيعات", desc: "افكار زيادة المبيعات", pdf: "https://drive.google.com/file/d/1IIZ6MMpXtFC_lUCBnmKMs8G4Tw9Yrloh/view?usp=sharing", coverImage: "151 IDEAS FOR SALES INCREASING.png", icon: "fa-coins",
+                  index: [{page:"  ", description:"", img:""},{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                  { title: "  اسرار التسويق", desc: "طرق التسويق بشكل احترافي", pdf: "https://drive.google.com/file/d/1N2CQp_4xQAf-CrLqrrqEPY3Fgmz8wNQi/view?usp=sharing", coverImage: "marketing secrets.png", icon: "fa-coins",
+                  index: [{page:"  ", description:"", img:""},{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                  { title: "العمل الجماعي ", desc: "كيف تبني وتدير فريق عمل متكامل", pdf: "https://drive.google.com/file/d/1235ICN2-TBSb_t_r5hwmNpsavhAqk2s6/view?usp=sharing", coverImage: "TEAM WORK.png", icon: "fa-coins",
+                  index: [{page:"", description:"", img:""},{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                  { title: "قواعد الإدارة ", desc: "ادارة الفريق بشكل متكامل", pdf: "https://drive.google.com/file/d/1bTtJf02ZEYtrlvFPEMsu903pSMNim7eK/view?usp=sharing", coverImage: "RULES MANAMENT.png", icon: "fa-coins",
+                  index: [{page:"  ", description:"", img:""},{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                
+                  { title: " إدارة المنظمات", desc: "", pdf: "https://drive.google.com/file/d/1Vc5iF7s62UiC-9d2ERWnKq1xwZ-yIGwN/view?usp=sharing", coverImage: "Foundations Managment.png", icon: "fa-coins",
+                  index: [{page:"  ", description:"", img:""},{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                  { title: " بحوث التسويق النظرية والرقمية", desc: "", pdf: "https://drive.google.com/file/d/1jCIvRC6XU4AEU0QlWd65F9YF7B-IuSeE/view?usp=sharing", coverImage: "marketing Researches.png", icon: "fa-coins",
+                  index: [{page:"  ", description:"", img:""},{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                  { title: " هندسة العرض", desc: "", pdf: "https://drive.google.com/file/d/1xvHHNOfuFCNxfVlXSrNOhDm9UJeGzcSi/view?usp=sharing", coverImage: "show engineering.png", icon: "fa-coins",
+                  index: [{page:"  ", description:"", img:""},{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                  
+            ]},        
+            { categoryId: "business", name: " إدارة الشؤون المالية الشخصية", icon: "fa-chart-line", books: [
+                { title: " ريادة الأعمال وإدارة المشروعات الصغيرة والمتوسطة ", desc: "ريادة الاعمال", pdf: "https://drive.google.com/file/d/1T22DrcFoVOX8zw700bYf6_95KNwS7h9R/view?usp=sharing", coverImage: "smallBuesness.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "ادارة المشاريع", desc: "", pdf: "https://drive.google.com/file/d/1YfWFoInRadppqTrdwx1Xp3GHkK7XRCj1/view?usp=sharing", coverImage: "ProjectManagement.png", icon: "fa-coins", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                
+            ]},
+            { categoryId: "business", name: " إدارة شركة مالية صغيرة ", icon: "fa-chart-line", books: [
+                { title: "ادارة المشاريع", desc: "", pdf: "https://drive.google.com/file/d/1YfWFoInRadppqTrdwx1Xp3GHkK7XRCj1/view?usp=sharing", coverImage: "ProjectManagement.png", icon: "fa-coins", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " أخلاقيات الإدارة ومسؤوليات الأعمال في شركات الأعمال ", desc: "", pdf: "https://drive.google.com/file/d/1P1uOQRku2yhmCdIb6YRO3HfP7bAPwfk2/view?usp=sharing", coverImage: "responsepelty.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " اخلاقيات العمل", desc: "", pdf: "https://drive.google.com/file/d/1PijUxRIlvXIdZnkKGNSpU1mQ9lWDZCh0/view?usp=sharing", coverImage: "work.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " استخدام الشركات للانترنت ", icon: "fa-chart-line", books: [
+                { title: "استخدام الشركات للانترنت ", desc: "", pdf: "https://drive.google.com/file/d/1b_MymhY3ySO6zJhk-VL64d9XDAJIID2k/view?usp=sharing", coverImage: "usingInternet.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: "أغراض إنشاء الشركات  ", icon: "fa-chart-line", books: [
+                { title: " الشركات التجارية ", desc: "", pdf: "https://drive.google.com/file/d/1Jusly6yAFCDof0kvKslxpAPFg5ZDh-Md/view?usp=sharing", coverImage: "companies.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "مبادئ التسويق الحديث ", desc: "", pdf: "https://drive.google.com/file/d/1N8ySy0ZOgcylpNZtUIsHCu8TIdUWvpDA/view?usp=sharing", coverImage: "marketingThieory.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " الأشخاص في المنظمات ", icon: "fa-chart-line", books: [
+                { title: " ادارة الأعمال الحديثة ", desc: "", pdf: "https://drive.google.com/file/d/15499sV7IU-IEUEQYCLIvrn7hzjqYDtcU/view?usp=sharing", coverImage: "modernBuesnessManagement.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  إدارة المؤسسات العامة", desc: "", pdf: "https://drive.google.com/file/d/1Dp0QixOazOdwRugzeKijwhTqcu5kc_l5/view?usp=sharing", coverImage: "adminOfCompanies.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " مهارات إعداد الهياكل التنظيمية ", desc: "", pdf: "https://drive.google.com/file/d/1o1JeyQXqbd3WjqKBlAybhD-7usZhXtHJ/view?usp=sharing", coverImage: "SkillsToPrepearOrganizationalStructures.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            
+            ]},
+            { categoryId: "business", name: " التنبؤ بالإداء المالي للشركة ", icon: "fa-chart-line", books: [
+                { title: "  الإدارة المالية المتقدمة", desc: "", pdf: "https://drive.google.com/file/d/1Jdn9Y63VBzh32kbxzABzWyKYUtXcTgkE/view?usp=sharing", coverImage: "advancedFanintialManagement.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "المحاسبة الإدارية", desc: "", pdf: "https://drive.google.com/file/d/1bcJ4oQuABUWq3KiuFXmLNVp3yK4lCueP/view?usp=sharing", coverImage: "money.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " العمل ضمن فريق ", icon: "fa-chart-line", books: [
+                { title: "إدارة فرق العمل", desc: "طريقة إدارة فرق العمل", pdf: "https://drive.google.com/file/d/1fBDSVTp6Rf28eqBHfaJEdz4TdBJgB4--/view?usp=sharing", coverImage: "TEAMS managment.png", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "القيادة", desc: "اهمية القيادة ودورها", pdf: "https://drive.google.com/file/d/1zbEvTNwr6HtrBKFEj4re_yqOETVFqdFW/view?usp=sharing", coverImage: "leading book.png", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "القيادة الإدارية ", desc: "", pdf: "https://drive.google.com/file/d/1jdLJ-vWAD1gqPdz3m099WsaKPHqox_XV/view?usp=sharing", coverImage: "AdministrativeLeaderShip.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " إدارة فريق العمل ", desc: "", pdf: "https://drive.google.com/file/d/1DMMGixKPv75phvSJyFdtYck42qgqgyOv/view?usp=sharing", coverImage: "TeamManangement.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " المؤسسات التجارية ", icon: "fa-chart-line", books: [
+                { title: " أساسيات الإدارة", desc: "أساسيات إدارة المشاريع", pdf: "https://drive.google.com/file/d/1nZmOqOTXgvHQVL37lQ4x9bSzhm4PjJ4j/view?usp=sharing", coverImage: "basics of management.png", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " اساسيات إدارة الأعمال ", desc: "", pdf: "https://drive.google.com/file/d/1ZeyLgkvl0st3OffibYnAkfoPiG4OPAwM/view?usp=sharing", coverImage: "BuesnesManagementBasics.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " انشاء شركة صغيرة ", icon: "fa-chart-line", books: [
+                { title: "  إدارة الأعمال الصغيرة", desc: "", pdf: "https://drive.google.com/file/d/1BmnkK66XxGGHNVgtgQyWAUro1f_gAksE/view?usp=sharing", coverImage: "smallBuesness.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " التميز في ريادة الأعمال ", desc: "", pdf: "https://drive.google.com/file/d/1n8agGiBlXNu-2Ti-TgilPbKQx9ux9FF3/view?usp=sharing", coverImage: "bueldingProjectFromZero.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+
+            ]},
+            { categoryId: "business", name: " تقنيات الترويج والعرض المرئية للاعمال ", icon: "fa-chart-line", books: [
+                { title: "  تقنيات الترويج والعرض", desc: "", pdf: "https://drive.google.com/file/d/1vta3YyFSHwd0fsrpml40bdb6E04rg-ve/view?usp=sharing", coverImage: "Marketting.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " خطة التسويق ", icon: "fa-chart-line", books: [
+                { title: "  التسويق", desc: "", pdf: "https://drive.google.com/file/d/18XpPfiZ0zhJMmsI-yLoQKQlvNDAceLgu/view?usp=sharing", coverImage: "shortIntroToMarketting.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "الجمهور  ", desc: "التسويق في عالم رقمي", pdf: "https://drive.google.com/file/d/1NzcFdNp9UpTShmFA1jiVNAiikdEC_b26/view?usp=sharing", coverImage: "busness12.png", icon: "fa-coins", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " استراتيجيات السوق ", desc: "", pdf: "https://drive.google.com/file/d/1dL5Q2ymhNY1S4DFVPyLmdwB831WDoxeO/view?usp=sharing", coverImage: "shop.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " اتخاذ القرارات الخاصة بالعمل ", icon: "fa-chart-line", books: [
+                { title: " اتخاذ القرارات الغدارية بأنواعها ", desc: "", pdf: "https://drive.google.com/file/d/1Xc3Mb-7SGHdZZ6GN_67c48JKIbXahrzV/view?usp=sharing", coverImage: "makingDisitions.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " الدليل لإدارة الأعمال ", desc: "", pdf: "https://drive.google.com/file/d/18zy9y50RqQwQTMAoPJ4Jjkd3GWuND-zV/view?usp=sharing", coverImage: "projectsManagementsHandbook.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                {  title: " لماذا تعتمد على الحظ  ", desc: "مبادئ اقتصادية  .", pdf: "https://drive.google.com/file/d/1JZQR4g6sV3fmO9pivxPVkBqfK8pIdKl_/view?usp=sharing", coverImage: "why we depend on luck.png", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+    
+            ]},
+            { categoryId: "business", name: "  اخلاقيات العمل", icon: "fa-chart-line", books: [
+                { title: " المؤتمرات {التخطيط , المراقبة والتنفيذ} ", desc: "", pdf: "https://drive.google.com/file/d/11r28nRpWcLeFWmCLvDsZ708CLk1GIKsT/view?usp=sharing", coverImage: "planning.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            
+        
+            { categoryId: "business", name: " البحث والتخطيط لحملة تسويقية ", icon: "fa-chart-line", books: [
+                { title: " الترويج التجاري للسلع والخدمات ", desc: "", pdf: "https://drive.google.com/file/d/1MDS7QCWsG5LPvT-aG1heAwYZUnNQ6Qua/view?usp=sharing", coverImage: "markettingForSales.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                
+            ]},
+            { categoryId: "business", name: " الموارد البشرية ", icon: "fa-chart-line", books: [
+                { title: "فن اختيار الموظفين  ", desc: "اهمية وصعوبة وكيفية اتقان ختيار الموظف المناسب", pdf: "https://drive.google.com/file/d/1FS1Jbb9GKTaMvV1p3guHp2jzYhkeh2YX/view?usp=sharing", coverImage: "choosing imployee.png", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "إدارة الموارد التجارية", desc: "", pdf: "https://drive.google.com/file/d/1xyUkz6HPYXkvzjJTzmWjZEz1UyAdM8Zu/view?usp=sharing", coverImage: "umansManagment.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " تمويل الأعمال ", icon: "fa-chart-line", books: [
+                { title: " تمويل المؤسسات ", desc: "", pdf: "https://drive.google.com/file/d/1l1y2I3wlu_qBED5GuQHvFUNkexcwAS59/view?usp=sharing", coverImage: "foundations.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: " مبادئ الإدارة المالية ", desc: "", pdf: "https://drive.google.com/file/d/15pZSrUUyfHle1BBjwsy5FJdZ0cHhQUTJ/view?usp=sharing", coverImage: "moneyManagement.png", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " دراسة خدمة العملاء  ", icon: "fa-chart-line", books: [
+                { title: "إدارة خدمة العملاء  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "business", name: " مبادئ الإدارة ", icon: "fa-chart-line", books: [
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+                { title: "  ", desc: "", pdf: "", coverImage: "", icon: "fa-terminal", index: [{page:"", description:"", img:""},{page:"", description:"", img:""}] },
+            ]},
+            { categoryId: "policies", name: "التشريعات الرقمية", icon: "fa-gavel", books: [
+                { title: "قانون حماية البيانات الشخصية", desc: "تشريع أردني للأمن الرقمي.", pdf: "https://drive.google.com/file/d/1DcMok_mixJStbozKuSEAu9caAZKngXQE/view?usp=sharing", coverImage: "rules.png", icon: "fa-user-shield",
+                  index: [{page:"المادة 5-10", description:"حقوق أصحاب البيانات", img:"https://placehold.co/300x200/4f5b62/d6a15a?text=Data+Privacy"}] },
+                { title: "Open Government Data Policy", desc: "سياسات البيانات الحكومية المفتوحة", pdf: "https://drive.google.com/file/d/1ZbKtASBPmmf_ZJttQzukLk6pj2FfDDuH/view?usp=sharing", coverImage: "Open Government Data Policy.png", icon: "fa-user-shield", index: [] },
+                { title: "قانون الجرائم الالكترونية", desc: "قانون الجرائم الالكترونية", pdf: "https://drive.google.com/file/d/1bjcCxkdSmPfbdsyk0YsVEq2ulMi1CeqH/view?usp=sharing", coverImage: "crimenalsPoly.png", icon: "fa-user-shield", index: [] },
+                { title: "سياسة استخدام موارد تكنولوجيا المعلومات", desc: "ضوابط أمن المعلومات", pdf: "https://drive.google.com/file/d/1UkdVHgNhMyps2X8x27DiB6KBOBVS8v8I/view?usp=sharing", coverImage: "سياسات.png", icon: "fa-user-shield", index: [] }
+            ]}
+        ]
+    };
+
+    let currentFilter = "all";
+    let searchQuery = "";
+
+    function renderShelves() {
+        const container = document.getElementById("shelvesArea");
+        if(!container) return;
+        let filteredShelves = libraryData.shelves.filter(shelf => currentFilter === "all" || shelf.categoryId === currentFilter);
+        if(searchQuery.trim()) {
+            filteredShelves = filteredShelves.map(shelf => ({ ...shelf, books: shelf.books.filter(book => book.title.includes(searchQuery) || book.desc.includes(searchQuery)) })).filter(s => s.books.length);
+        }
+        if(filteredShelves.length === 0) { container.innerHTML = `<div style="padding:2rem; text-align:center;">📭 لا توجد كتب مطابقة</div>`; return; }
+        container.innerHTML = "";
+        filteredShelves.forEach(shelf => {
+            const shelfDiv = document.createElement("div"); shelfDiv.className = "shelf-category";
+            shelfDiv.innerHTML = `<div class="shelf-header"><i class="fas ${shelf.icon || 'fa-book'}"></i> <span>📖 رف ${shelf.name}</span></div><div class="books-horizontal"></div>`;
+            container.appendChild(shelfDiv);
+            const booksWrapper = shelfDiv.querySelector(".books-horizontal");
+            shelf.books.forEach(book => {
+                const card = document.createElement("div"); card.className = "book-card";
+                const hasImage = book.coverImage && book.coverImage.trim() && book.coverImage !== "";
+                const coverStyle = hasImage ? `style="background-image: url('${book.coverImage}'); background-size: cover;"` : "";
+                const iconHtml = !hasImage ? `<i class="fas ${book.icon || 'fa-book'}"></i>` : "";
+                card.innerHTML = `<div class="book-cover" ${coverStyle}>${iconHtml}</div><div class="book-info"><div class="book-title">📘 ${book.title}</div><div class="book-desc">${book.desc}</div><button class="more-details-btn"><i class="fas fa-list-ul"></i> المزيد (فهرس)</button><button class="pdf-link" data-url="${book.pdf}"><i class="fas fa-file-pdf"></i> فتح PDF</button></div>`;
+                if(hasImage) card.querySelector('.book-cover').classList.add('has-image');
+                const moreBtn = card.querySelector(".more-details-btn");
+                moreBtn.addEventListener("click", () => showBookIndex(book));
+                const pdfBtn = card.querySelector(".pdf-link");
+                pdfBtn.addEventListener("click", (e) => { let url = pdfBtn.dataset.url; if(url && url !== "#") window.open(url, "_blank"); else alert("📄 سيتم إضافة رابط PDF للكتاب قريباً من فريق مكتبة البيتيك."); });
+                booksWrapper.appendChild(card);
+            });
+            const wrap = booksWrapper;
+            let isDown = false, startX, scrollLeft;
+            wrap.addEventListener("mousedown", (e) => { isDown=true; wrap.style.cursor="grabbing"; startX = e.pageX - wrap.offsetLeft; scrollLeft = wrap.scrollLeft; });
+            window.addEventListener("mouseup", () => { isDown=false; wrap.style.cursor="grab"; });
+            window.addEventListener("mousemove", (e) => { if(!isDown) return; e.preventDefault(); const x = e.pageX - wrap.offsetLeft; const walk = (x-startX)*1.2; wrap.scrollLeft = scrollLeft - walk; });
+            wrap.addEventListener("wheel", (e) => { if(e.deltaY) { e.preventDefault(); wrap.scrollLeft += e.deltaY; } });
+        });
+    }
+
+    function showBookIndex(book) {
+        const modal = document.getElementById("bookModal");
+        const modalContentDiv = document.getElementById("modalDynamicContent");
+        if(!book.index || book.index.length === 0) {
+            modalContentDiv.innerHTML = `<h3>📖 ${book.title}</h3><p>لا توجد فهارس تفصيلية مرفقة لهذا الكتاب حالياً.</p><p>يمكنك الاطلاع على المحتوى عند فتح ملف PDF.</p>`;
+        } else {
+            let html = `<h3>📑 فهرس الكتاب: ${book.title}</h3><div class="index-section">`;
+            book.index.forEach(item => {
+                html += `<div class="index-item"><div class="index-img" style="background-image: url('${item.img || 'https://placehold.co/200x150/eadbcb/8b6949?text=صورة'}');"></div><div class="index-text"><strong>📍 ${item.page}</strong><p>${item.description}</p></div></div>`;
+            });
+            html += `</div><p style="margin-top:12px;">* اضغط على زر "فتح PDF" للاطلاع الكامل على الكتاب.</p>`;
+            modalContentDiv.innerHTML = html;
+        }
+        modal.classList.add("active");
+    }
+
+    function buildFilterTabs() {
+        const tabsContainer = document.getElementById("filterTabs");
+        tabsContainer.innerHTML = "";
+        libraryData.categories.forEach(cat => {
+            const btn = document.createElement("button");
+            btn.className = `filter-btn ${currentFilter === cat.id ? 'active' : ''}`;
+            btn.innerText = cat.name;
+            btn.addEventListener("click", () => { currentFilter = cat.id; document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active")); btn.classList.add("active"); renderShelves(); });
+            tabsContainer.appendChild(btn);
+        });
+    }
+
+    const searchInput = document.getElementById("searchInput");
+    if(searchInput) searchInput.addEventListener("input", (e) => { searchQuery = e.target.value; renderShelves(); });
+
+    // Modal close
+    const modalOverlay = document.getElementById("bookModal");
+    document.getElementById("closeModalBtn").addEventListener("click", () => modalOverlay.classList.remove("active"));
+    modalOverlay.addEventListener("click", (e) => { if(e.target === modalOverlay) modalOverlay.classList.remove("active"); });
+
+    // Dark mode toggle
+    const toggleBtn = document.getElementById("themeToggleBtn");
+    toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        const icon = toggleBtn.querySelector("i");
+        if(document.body.classList.contains("dark-mode")) icon.className = "fas fa-sun"; else icon.className = "fas fa-moon";
+    });
+
+    // GSAP animations
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray(".section, .shelf-category, .team-card, .vision-card").forEach(el => { gsap.from(el, { scrollTrigger: { trigger: el, start: "top 85%" }, opacity: 0, y: 40, duration: 0.6 }); });
+    
+    function floatingBg() {
+        const container = document.getElementById("floating");
+        const icons = ["fa-book", "fa-book-open", "fa-scroll", "fa-journal-whills"];
+        for(let i=0;i<28;i++){ let div=document.createElement("div"); div.className="floating-item"; let ic=icons[Math.floor(Math.random()*icons.length)]; div.innerHTML=`<i class="fas ${ic}"></i>`; div.style.left=Math.random()*100+"%"; div.style.fontSize=(Math.random()*35+15)+"px"; div.style.animationDuration=(Math.random()*20+12)+"s"; div.style.animationDelay=(Math.random()*15)+"s"; container.appendChild(div); }
+    }
+    floatingBg();
+    window.addEventListener("scroll", () => { const nav = document.getElementById("navbar"); if(window.scrollY > 50) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); });
+    buildFilterTabs();
+    renderShelves();
+</script>
+</body>
+</html>
